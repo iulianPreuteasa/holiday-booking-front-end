@@ -1,23 +1,19 @@
-import logo from './logo.svg';
-import './App.css';
-
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      <div className="navbar-container">
+        <div>Hello, Iulian</div>
+        <div>login/logout</div>
+      </div>
+      <div className="calendar-container">
+        <div className="calendar-show">Calendar</div>
+        <div className="calendar-range">confirma perioada</div>
+      </div>
+      <div className="holiday-container">
+        <div className="holiday-accept">zile acceptate</div>
+        <div className="holiday-pending">zile in asteptare</div>
+        <div className="holiday-reject">zile respinse</div>
+      </div>
     </div>
   );
 }
