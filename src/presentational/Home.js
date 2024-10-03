@@ -1,10 +1,22 @@
 import React from "react";
-import LoginInContainer from "../containers/LoginInContainer";
+import { useNavigate } from "react-router-dom";
+
 const Home = () => {
+  const navigate = useNavigate();
+
   return (
-    <>
-      <LoginInContainer />
-    </>
+    <div>
+      <p>
+        If you are not in a group you need to ask for an invitation from your
+        manager and he will add you to his group!
+      </p>
+      <button
+        className="btn btn-primary"
+        onClick={() => navigate("/notifications")}
+      >
+        Notifications
+      </button>
+    </div>
   );
 };
 

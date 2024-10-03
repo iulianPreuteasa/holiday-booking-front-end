@@ -1,40 +1,38 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import CalendarContainer from "../containers/CalendarContainer";
 
-const Profile = ({ name, surname, acceptat, asteptare, respins }) => {
+const Profile = () => {
   const navigate = useNavigate();
+  const [userData, setUserData] = useState({
+    name: "",
+    surname: "",
+    acceptat: [],
+    asteptare: [],
+    respins: [],
+  });
 
   useEffect(() => {
-    if (!name) {
-      navigate("/login");
+    const storedUser = localStorage.getItem("user");
+    if (storedUser) {
+      setUserData(JSON.parse(storedUser));
+    } else {
+      navigate("/login"); // Redirecționează la login dacă nu există date
     }
-  }, [name, navigate]);
-
-  const logout = () => {
-    navigate("/login");
-  };
+  }, [navigate]);
 
   return (
     <div className="d-flex justify-content-center align-item-center w-100 vh-100">
       <div className="w-100">
-        <div className="container-fluide p-3 border-bottom border-primary rounded d-flex justify-content-between">
-          <p>
-            {name ? `Welcome, ${name} ${surname}!` : "No user data available"}
-          </p>
-          <button onClick={logout} className="btn btn-primary ">
-            Log Out
-          </button>
-        </div>
         <div className="calendar-container">
           <div className="calendar-show">
             <CalendarContainer />
           </div>
         </div>
         <div className="d-flex flex-column align-items-center justify-content-center m-3 ">
-          <div className="m-2">Perioada acceptata: {acceptat}</div>
-          <div className="m-2">Perioada in asteptare: {asteptare}</div>
-          <div className="m-2">Perioada respinsa: {respins}</div>
+          <div className="m-2">Perioada acceptata: {userData.acceptat}</div>
+          <div className="m-2">Perioada in asteptare: {userData.asteptare}</div>
+          <div className="m-2">Perioada respinsa: {userData.respins}</div>
         </div>
       </div>
     </div>

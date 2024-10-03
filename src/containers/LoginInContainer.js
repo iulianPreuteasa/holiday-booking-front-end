@@ -1,42 +1,53 @@
 import React, { useState } from "react";
-import { users } from "../data/fakeData";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 const LoginInContainer = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // aici trebue sa fac verificarea data email si parola corespund cu cele din baza de date
-    const valid = users.filter(
-      (user) => user.email === email && user.parola === password
-    );
-    if (valid.length === 1) {
-      navigate("/profile", {
-        state: {
-          name: valid[0].nume,
-          surname: valid[0].prenume,
-          acceptat: valid[0].concedii.acceptat,
-          respins: valid[0].concedii.respins,
-          asteptare: valid[0].concedii.asteptare,
-        },
+
+    try {
+      // Trimite cererea de autentificare către server
+      const response = await axios.post("http://localhost:5000/users/login", {
+        email,
+        password,
       });
-    } else {
-      alert("Try again!");
+
+      // Serverul ar trebui să returneze datele utilizatorului dacă autentificarea este validă
+      const user = response.data.user;
+
+      // Stochează utilizatorul în localStorage pentru a păstra sesiunea
+      localStorage.setItem(
+        "user",
+        JSON.stringify({
+          name: user.name,
+          surname: user.surname,
+        })
+      );
+
+      // Redirecționează către pagina "Home"
+      navigate("/home");
+    } catch (error) {
+      // În caz de eroare, arată un mesaj de eroare
+      console.error("Error logging in:", error);
+      alert("Invalid email or password. Please try again!");
     }
   };
 
   const signUp = () => {
     navigate("/signup");
   };
+
   return (
     <div className="d-flex justify-content-center align-items-center vh-100">
       <div className="container-sm col-6 d-flex flex-column justify-content-center align-items-center">
         <form
           onSubmit={handleSubmit}
-          className="d-flex flex-column w-100 p-4 border rounded shadow-lg"
+          className="d-flex flex-column mw-50 p-4 border rounded shadow-lg"
         >
           <input
             type="text"
@@ -46,6 +57,7 @@ const LoginInContainer = () => {
             placeholder="Email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
+            required
           />
           <input
             type="password"
@@ -55,6 +67,7 @@ const LoginInContainer = () => {
             placeholder="Password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
+            required
           />
           <button type="submit" className="btn btn-primary">
             Login
