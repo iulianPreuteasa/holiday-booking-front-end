@@ -19,13 +19,13 @@ const LoginInContainer = () => {
 
       // Serverul ar trebui să returneze datele utilizatorului dacă autentificarea este validă
       const user = response.data.user;
-
       // Stochează utilizatorul în localStorage pentru a păstra sesiunea
       localStorage.setItem(
         "user",
         JSON.stringify({
           name: user.name,
           surname: user.surname,
+          userId: user._id,
         })
       );
 

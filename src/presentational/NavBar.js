@@ -11,9 +11,23 @@ const NavBar = ({ name, surname, onLogout }) => {
   return (
     <div className="container-fluide p-3 border-bottom border-primary rounded d-flex justify-content-between">
       <p>{name ? `Welcome, ${name} ${surname}!` : "No user data available"}</p>
-      <button onClick={logout} className="btn btn-primary ">
-        Log Out
-      </button>
+      <div>
+        <button
+          className="btn btn-primary m-2"
+          onClick={() => navigate("/home")}
+        >
+          Home
+        </button>
+        <button
+          className="btn btn-primary m-2"
+          onClick={() => navigate("/bookings")}
+        >
+          Bookings
+        </button>
+        <button onClick={logout} className="btn btn-primary m-2">
+          Log Out
+        </button>
+      </div>
     </div>
   );
 };

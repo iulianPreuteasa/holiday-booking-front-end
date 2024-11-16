@@ -1,34 +1,102 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
 
-const CalendarContainer = () => {
+const CalendarContainer = ({ onBookingsUpdated }) => {
   const [date, setDate] = useState([new Date(), new Date()]);
-  let dateStart = date[0].toLocaleDateString();
-  let dateEnd = date[1].toLocaleDateString();
+  const [selectedOption, setSelectedOption] = useState("");
+  const [users, setUsers] = useState([]);
+  const [booked, setBooked] = useState(false); // Track booking state
+  const userId = JSON.parse(localStorage.getItem("user")).userId;
 
-  const bookNow = () => {
-    alert(`Booked for the period of ${dateStart} - ${dateEnd}`);
+  // Fetch managers (users) when the component mounts
+  useEffect(() => {
+    const fetchManagers = async () => {
+      try {
+        const response = await axios.get("http://localhost:5000/users");
+        setUsers(response.data);
+      } catch (error) {
+        console.error("Error fetching users:", error);
+      }
+    };
+
+    fetchManagers();
+  }, []);
+
+  const handleChange = (event) => {
+    setSelectedOption(event.target.value);
   };
+
+  const bookNow = async () => {
+    try {
+      const response = await axios.post(
+        "http://localhost:5000/bookings/request",
+        {
+          userId: userId,
+          dateStart: date[0],
+          dateEnd: date[1],
+        }
+      );
+
+      // Show success message
+      setBooked(true);
+
+      // Reset date and selected option
+      setDate([new Date(), new Date()]);
+      setSelectedOption("");
+
+      if (onBookingsUpdated) {
+        onBookingsUpdated(); // Call the function passed as a prop
+      }
+      // Automatically reset booked state after 3 seconds
+      setTimeout(() => {
+        setBooked(false);
+      }, 3000);
+    } catch (error) {
+      console.error("Error booking:", error);
+    }
+  };
+
   return (
-    <>
-      <div className="d-flex align-items-center justify-content-center flex-column">
-        <Calendar
-          className="m-3 mt-5"
-          returnValue="range"
-          selectRange={true}
-          onChange={setDate}
-          value={date}
-          minDate={new Date()}
-        />
-        <div className="m-2">
-          Your choice: {dateStart} - {dateEnd}
+    <div className="d-flex align-items-center justify-content-center flex-column">
+      <Calendar
+        className="m-3 mt-5"
+        returnValue="range"
+        selectRange={true}
+        onChange={setDate}
+        value={date}
+        minDate={new Date()}
+      />
+      {/* Success Message */}
+      {booked && (
+        <div className="alert alert-success mt-3">
+          Your booking was successful!
         </div>
-        <button className="btn btn-primary m-2" onClick={bookNow}>
-          Book Now
-        </button>
+      )}
+      <div className="m-2">
+        Your choice: {date[0].toLocaleDateString()} -{" "}
+        {date[1].toLocaleDateString()}
       </div>
-    </>
+      <div>
+        <label htmlFor="options">Choose your Manager:</label>
+        <select
+          className="form-select"
+          id="options"
+          value={selectedOption}
+          onChange={handleChange}
+        >
+          {users.map((user) => (
+            <option key={user.id} value={user.id}>
+              {user.name} {user.surname}
+            </option>
+          ))}
+        </select>
+      </div>
+      <button className="btn btn-primary m-2" onClick={bookNow}>
+        Book Now
+      </button>
+    </div>
   );
 };
 

@@ -1,5 +1,5 @@
 import { Routes, Route, useLocation, useNavigate } from "react-router-dom";
-
+import "bootstrap-icons/font/bootstrap-icons.css";
 import React, { useEffect, useState } from "react";
 import LoginInContainer from "./containers/LoginInContainer";
 import Home from "./presentational/Home";
@@ -7,6 +7,7 @@ import SignUpContainer from "./containers/SignUpContainer";
 import Profile from "./presentational/Profile";
 import NavBar from "./presentational/NavBar";
 import NotificationsContainer from "./containers/NotificationsContainer";
+import BookingsContainer from "./containers/BookingsContainer";
 
 function App() {
   const navigate = useNavigate();
@@ -51,6 +52,7 @@ function App() {
         <Route path="/profile" element={<Profile />} />
         <Route path="/signup" element={<SignUpContainer />} />
         <Route path="/notifications" element={<NotificationsContainer />} />
+        <Route path="/bookings" element={<BookingsContainer />} />
       </Routes>
     </>
   );
