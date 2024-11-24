@@ -24,6 +24,12 @@ const NavBar = ({ name, surname, onLogout }) => {
         >
           Bookings
         </button>
+        <button
+          className="btn btn-primary"
+          onClick={() => navigate("/notifications")}
+        >
+          Notifications
+        </button>
         <button onClick={logout} className="btn btn-primary m-2">
           Log Out
         </button>

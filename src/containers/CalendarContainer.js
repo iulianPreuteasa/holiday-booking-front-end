@@ -8,6 +8,7 @@ const CalendarContainer = ({ onBookingsUpdated }) => {
   const [selectedOption, setSelectedOption] = useState("");
   const [users, setUsers] = useState([]);
   const [booked, setBooked] = useState(false); // Track booking state
+  const [bookingId, setBookingId] = useState();
   const userId = JSON.parse(localStorage.getItem("user")).userId;
 
   // Fetch managers (users) when the component mounts
@@ -30,7 +31,7 @@ const CalendarContainer = ({ onBookingsUpdated }) => {
 
   const bookNow = async () => {
     try {
-      const response = await axios.post(
+      const bookingResponse = await axios.post(
         "http://localhost:5000/bookings/request",
         {
           userId: userId,
@@ -39,8 +40,25 @@ const CalendarContainer = ({ onBookingsUpdated }) => {
         }
       );
 
-      // Show success message
-      setBooked(true);
+      const bookingId = bookingResponse.data.bookingId; // Get the booking ID from the response
+
+      if (selectedOption && bookingId) {
+        try {
+          const notificationResponse = await axios.post(
+            "http://localhost:5000/notifications/request",
+            {
+              user: selectedOption,
+              bookingId: bookingId,
+              message: "You have a new booking request",
+            }
+          );
+          console.log("Notification sent:", notificationResponse);
+          // Show success message
+          setBooked(true);
+        } catch (error) {
+          console.error("Error sending notification:", error);
+        }
+      }
 
       // Reset date and selected option
       setDate([new Date(), new Date()]);
@@ -49,6 +67,7 @@ const CalendarContainer = ({ onBookingsUpdated }) => {
       if (onBookingsUpdated) {
         onBookingsUpdated(); // Call the function passed as a prop
       }
+
       // Automatically reset booked state after 3 seconds
       setTimeout(() => {
         setBooked(false);
@@ -57,7 +76,6 @@ const CalendarContainer = ({ onBookingsUpdated }) => {
       console.error("Error booking:", error);
     }
   };
-
   return (
     <div className="d-flex align-items-center justify-content-center flex-column">
       <Calendar
@@ -86,6 +104,7 @@ const CalendarContainer = ({ onBookingsUpdated }) => {
           value={selectedOption}
           onChange={handleChange}
         >
+          <option>Choose an option</option>
           {users.map((user) => (
             <option key={user.id} value={user.id}>
               {user.name} {user.surname}
