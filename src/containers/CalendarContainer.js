@@ -5,7 +5,7 @@ import "react-calendar/dist/Calendar.css";
 
 const CalendarContainer = ({ onBookingsUpdated }) => {
   const [date, setDate] = useState([new Date(), new Date()]);
-  const [selectedOption, setSelectedOption] = useState("");
+  const [selectedOption, setSelectedOption] = useState(false);
   const [users, setUsers] = useState([]);
   const [booked, setBooked] = useState(false); // Track booking state
   const [bookingId, setBookingId] = useState();
@@ -30,6 +30,10 @@ const CalendarContainer = ({ onBookingsUpdated }) => {
   };
 
   const bookNow = async () => {
+    if (!selectedOption) {
+      window.confirm("You nned to choose your manager!");
+      return;
+    }
     try {
       const bookingResponse = await axios.post(
         "http://localhost:5000/bookings/request",
@@ -49,10 +53,9 @@ const CalendarContainer = ({ onBookingsUpdated }) => {
             {
               user: selectedOption,
               bookingId: bookingId,
-              message: "You have a new booking request",
+              message: "New booking request",
             }
           );
-          console.log("Notification sent:", notificationResponse);
           // Show success message
           setBooked(true);
         } catch (error) {
@@ -62,7 +65,7 @@ const CalendarContainer = ({ onBookingsUpdated }) => {
 
       // Reset date and selected option
       setDate([new Date(), new Date()]);
-      setSelectedOption("");
+      setSelectedOption(false);
 
       if (onBookingsUpdated) {
         onBookingsUpdated(); // Call the function passed as a prop

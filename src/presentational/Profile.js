@@ -33,9 +33,9 @@ const Profile = () => {
     }
   }, [userId]); // Only call fetchBookings when userId changes
 
-  const formatDate = (date) => {
-    const d = new Date(date);
-    return d.toLocaleDateString("en-GB"); // "en-GB" is for the "dd/mm/yyyy" format
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString("en-GB"); // Format: DD/MM/YYYY
   };
 
   const fetchBookings = async () => {
@@ -87,6 +87,17 @@ const Profile = () => {
       console.error("Error fetching bookings:", error);
     }
   };
+  const deleteBookingNotifications = async (bookingId) => {
+    try {
+      const response = await axios.delete(
+        `http://localhost:5000/notifications/delete/${bookingId}`
+      );
+      // Actualizează UI-ul după ștergere
+      fetchBookings(); // O funcție care reîncarcă rezervările curente
+    } catch (error) {
+      console.error("Error deleting notifications:", error);
+    }
+  };
 
   const deleteBooking = async (e) => {
     const toDelete = e.target.closest("li");
@@ -100,6 +111,7 @@ const Profile = () => {
         const response = await axios.delete(
           `http://localhost:5000/bookings/delete/${bookingId}`
         );
+        deleteBookingNotifications(bookingId);
 
         // Remove the deleted booking from the UI by updating the state
         setPendingDates((prev) =>
