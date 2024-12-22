@@ -56,33 +56,44 @@ const Profile = () => {
       }
 
       // Map the bookings into categorized arrays
-      const pending = bookings.flatMap((booking) =>
-        booking.requestDates.map((date) => ({
+      const allBookings = bookings.map((booking) => {
+        return {
           bookingId: booking._id,
-          startDate: date.startDate,
-          endDate: date.endDate,
-        }))
-      );
+          startDate: booking.booking.startDate,
+          endDate: booking.booking.endDate,
+          status: booking.status,
+        };
+      });
+      const pending = allBookings.filter((booking) => {
+        if (booking.status === "requested") {
+          return {
+            startDate: booking.startDate,
+            endDate: booking.endDate,
+          };
+        }
+      });
 
-      const accepted = bookings.flatMap((booking) =>
-        booking.acceptedDates.map((date) => ({
-          bookingId: booking._id,
-          startDate: date.startDate,
-          endDate: date.endDate,
-        }))
-      );
+      const rejected = allBookings.filter((booking) => {
+        if (booking.status === "rejected") {
+          return {
+            startDate: booking.startDate,
+            endDate: booking.endDate,
+          };
+        }
+      });
 
-      const rejected = bookings.flatMap((booking) =>
-        booking.rejectedDates.map((date) => ({
-          bookingId: booking._id,
-          startDate: date.startDate,
-          endDate: date.endDate,
-        }))
-      );
+      const accepted = allBookings.filter((booking) => {
+        if (booking.status === "accepted") {
+          return {
+            startDate: booking.startDate,
+            endDate: booking.endDate,
+          };
+        }
+      });
 
       setPendingDates(pending);
-      setAcceptedDates(accepted);
       setRejectedDates(rejected);
+      setAcceptedDates(accepted);
     } catch (error) {
       console.error("Error fetching bookings:", error);
     }
