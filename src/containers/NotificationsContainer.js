@@ -27,24 +27,62 @@ const NotificationsContainer = () => {
     return date.toLocaleDateString("en-GB"); // Format: DD/MM/YYYY
   };
 
-  const acceptBooking = (e) => {
-    let targetBooking = e.target.closest("li");
-    targetBooking.textContent = "Your booking was accepted!";
-    // pe partea de front-end
-    // atunci cand apas pe accept am nevoie sa arate un mesaj in care sa spuna ca bookingul a fost acceptat
+  const acceptBooking = async (e) => {
+    let targetBooking = e.target.closest("tr");
+    const button = targetBooking.querySelector(".btn-success");
 
-    //  pe partea de back-end trebuie ca sa se mute bookingul de la request  la accept
+    button.disabled = true;
+    const bookingId = targetBooking.getAttribute("data-key");
+    const notificationId = targetBooking.getAttribute("data-notification");
+
+    try {
+      const response = await axios.patch(
+        `http://localhost:5000/bookings/request/accepted`,
+        { bookingId, notificationId }
+      );
+
+      const statusCell = targetBooking.querySelector(".status-cell");
+      if (statusCell) {
+        statusCell.textContent = "Accepted";
+      } else {
+        targetBooking.textContent = "Your booking was accepted!";
+      }
+      setTimeout(() => {
+        targetBooking.remove();
+      }, 3000);
+    } catch (error) {
+      console.error("Error fetching notifications:", error);
+    }
   };
 
-  const rejectBooking = (e) => {
-    let targetBooking = e.target.closest("li");
-    targetBooking.textContent = " Your booking was rejected!";
-    // pe partea de front-end
-    // atunci cand apas pe accept am nevoie sa arate un mesaj in care sa spuna ca bookingul a fost rejectat
+  const rejectBooking = async (e) => {
+    let targetBooking = e.target.closest("tr");
+    const button = targetBooking.querySelector(".btn-danger");
 
-    //  pe partea de back-end trebuie ca sa se mute bookingul de la request reject
+    button.disabled = true;
+    const bookingId = targetBooking.getAttribute("data-key");
+    const notificationId = targetBooking.getAttribute("data-notification");
+
+    try {
+      const response = await axios.patch(
+        `http://localhost:5000/bookings/request/rejected`,
+        { bookingId, notificationId }
+      );
+
+      const statusCell = targetBooking.querySelector(".status-cell");
+      if (statusCell) {
+        statusCell.textContent = "Rejected";
+      } else {
+        targetBooking.textContent = "Your booking was Rejected!";
+      }
+
+      setTimeout(() => {
+        targetBooking.remove();
+      }, 3000);
+    } catch (error) {
+      console.error("Error fetching notifications:", error);
+    }
   };
-
   return (
     <div>
       <h2>Your Notifications</h2>
@@ -54,13 +92,18 @@ const NotificationsContainer = () => {
             <th scope="col">#</th>
             <th scope="col">From Date</th>
             <th scope="col">To Date</th>
+            <th scope="col">Status Cell</th>
             <th scope="col"></th>
             <th scope="col"></th>
           </tr>
         </thead>
         <tbody>
           {notifications.map((notification, index) => (
-            <tr key={notification._id}>
+            <tr
+              key={notification._id}
+              data-notification={notification._id}
+              data-key={notification.booking._id}
+            >
               <th scope="row">{index}</th>
               <td>{`${formatDate(
                 notification.bookingDetails.bookings.startDate
@@ -68,25 +111,22 @@ const NotificationsContainer = () => {
               <td>{`${formatDate(
                 notification.bookingDetails.bookings.endDate
               )}`}</td>
+              <td className="status-cell"></td>
               <td>
-                <button className="btn btn-success">Accept</button>
+                <button onClick={acceptBooking} className="btn btn-success">
+                  Accept
+                </button>
               </td>
               <td>
                 {" "}
-                <button className="btn btn-danger">Refuse</button>
+                <button onClick={rejectBooking} className="btn btn-danger">
+                  Refuse
+                </button>
               </td>
             </tr>
           ))}
         </tbody>
       </table>
-      {/* <li key={notification._id}>
-        <p>{notification.message}</p>
-        <p key={`${notification._id}-${index}`} className="pst-group-item">
-          {`${formatDate(
-            notification.bookingDetails.bookings.startDate
-          )} - ${formatDate(notification.bookingDetails.bookings.endDate)}`}
-        </p>
-      </li> */}
     </div>
   );
 };
