@@ -1,11 +1,12 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 
 const NavBar = ({ name, surname, onLogout }) => {
+  const { logout } = useAuth();
   const navigate = useNavigate();
-  const logout = () => {
-    localStorage.removeItem("user");
-    onLogout();
+  const loggingout = async () => {
+    await logout();
     navigate("/login");
   };
   return (
@@ -30,7 +31,7 @@ const NavBar = ({ name, surname, onLogout }) => {
         >
           Notifications
         </button>
-        <button onClick={logout} className="btn btn-primary m-2">
+        <button onClick={loggingout} className="btn btn-primary m-2">
           Log Out
         </button>
       </div>

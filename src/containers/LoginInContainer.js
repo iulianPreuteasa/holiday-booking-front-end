@@ -1,40 +1,22 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import { useAuth } from "../context/AuthContext";
 
 const LoginInContainer = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
 
+  const { login } = useAuth();
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     try {
-      // Trimite cererea de autentificare către server
-      const response = await axios.post("http://localhost:5000/users/login", {
-        email,
-        password,
-      });
-
-      // Serverul ar trebui să returneze datele utilizatorului dacă autentificarea este validă
-      const user = response.data.user;
-      // Stochează utilizatorul în localStorage pentru a păstra sesiunea
-      localStorage.setItem(
-        "user",
-        JSON.stringify({
-          name: user.name,
-          surname: user.surname,
-          userId: user._id,
-        })
-      );
-
-      // Redirecționează către pagina "Home"
+      await login(email, password); // folosești funcția din context
       navigate("/home");
-    } catch (error) {
-      // În caz de eroare, arată un mesaj de eroare
-      console.error("Error logging in:", error);
-      alert("Invalid email or password. Please try again!");
+    } catch {
+      alert("Invalid email or password.");
     }
   };
 

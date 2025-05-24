@@ -2,14 +2,16 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
+import { useAuth } from "../context/AuthContext";
 
 const CalendarContainer = ({ onBookingsUpdated }) => {
+  const { user } = useAuth();
   const [date, setDate] = useState([new Date(), new Date()]);
   const [selectedOption, setSelectedOption] = useState(false);
   const [users, setUsers] = useState([]);
   const [booked, setBooked] = useState(false); // Track booking state
   const [bookingId, setBookingId] = useState();
-  const userId = JSON.parse(localStorage.getItem("user")).userId;
+  const userId = user._id;
 
   // Fetch managers (users) when the component mounts
   useEffect(() => {
@@ -23,7 +25,7 @@ const CalendarContainer = ({ onBookingsUpdated }) => {
     };
 
     fetchManagers();
-  }, []);
+  }, [user]);
 
   const handleChange = (event) => {
     setSelectedOption(event.target.value);

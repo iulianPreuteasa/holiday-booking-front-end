@@ -1,6 +1,6 @@
 import { Routes, Route, useLocation, useNavigate } from "react-router-dom";
 import "bootstrap-icons/font/bootstrap-icons.css";
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import LoginInContainer from "./containers/LoginInContainer";
 import Home from "./presentational/Home";
 import SignUpContainer from "./containers/SignUpContainer";
@@ -8,51 +8,102 @@ import Profile from "./presentational/Profile";
 import NavBar from "./presentational/NavBar";
 import NotificationsContainer from "./containers/NotificationsContainer";
 import BookingsContainer from "./containers/BookingsContainer";
+import { useAuth } from "./context/AuthContext";
+import axios from "axios";
+import ProtectedRoute from "./containers/ProtectedRoute";
 
 function App() {
+  const { setAccessToken, setUser } = useAuth();
+
+  useEffect(() => {
+    const refreshAccessToken = async () => {
+      try {
+        const res = await axios.get(
+          "http://localhost:5000/users/refresh_token",
+          {
+            withCredentials: true,
+          }
+        );
+        if (res.data.accesstoken) {
+          setAccessToken(res.data.accesstoken);
+          setUser(res.data.user);
+        }
+      } catch (error) {
+        setAccessToken(null);
+        setUser(null);
+      }
+    };
+
+    refreshAccessToken();
+  }, [setAccessToken, setUser]);
+
   const navigate = useNavigate();
   const location = useLocation();
 
-  const [userData, setUserData] = useState(null);
+  const { user, logout } = useAuth();
 
   useEffect(() => {
-    const storedUser = localStorage.getItem("user");
-
-    // Verificăm dacă utilizatorul este logat sau dacă suntem pe /login sau /signup
+    // Dacă utilizatorul nu este logat și nu suntem pe login/signup → redirect
     if (
-      !storedUser &&
+      !user &&
       location.pathname !== "/login" &&
       location.pathname !== "/signup"
     ) {
-      setUserData(null);
       navigate("/login");
-    } else if (storedUser) {
-      setUserData(JSON.parse(storedUser));
     }
-  }, [navigate, location.pathname]);
-
-  const handleLogout = () => {
-    setUserData(null);
-  };
+  }, [user, location.pathname, navigate]);
 
   return (
     <>
-      {userData && (
-        <NavBar
-          name={userData.name}
-          surname={userData.surname}
-          onLogout={handleLogout}
-        />
+      {user && (
+        <NavBar name={user.name} surname={user.surname} onLogout={logout} />
       )}
 
       <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/home" element={<Home />} />
-        <Route path="/login" element={<LoginInContainer />} />
-        <Route path="/profile" element={<Profile />} />
+        <Route
+          path="/"
+          element={
+            <ProtectedRoute>
+              <Home />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/home"
+          element={
+            <ProtectedRoute>
+              <Home />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/profile"
+          element={
+            <ProtectedRoute>
+              <Profile />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/notifications"
+          element={
+            <ProtectedRoute>
+              <NotificationsContainer />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/bookings"
+          element={
+            <ProtectedRoute>
+              <BookingsContainer />
+            </ProtectedRoute>
+          }
+        />
+        {/* unprotected routes */}
         <Route path="/signup" element={<SignUpContainer />} />
-        <Route path="/notifications" element={<NotificationsContainer />} />
-        <Route path="/bookings" element={<BookingsContainer />} />
+        <Route path="/login" element={<LoginInContainer />} />
       </Routes>
     </>
   );

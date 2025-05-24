@@ -15,7 +15,6 @@ const SignUpContainer = () => {
     e.preventDefault();
     // aici va trebui sa trimit datele in baza de date ca sa se faca un cont nou
     try {
-      console.log(password, confirmPassword);
       // Trimite cererea de autentificare către server
       if (password !== confirmPassword || password === "") {
         alert("password doesen't match or empty");

@@ -1,0 +1,53 @@
+[33mcommit 98eca47b7cfba215a540e1c668770f8c57ad007d[m[33m ([m[1;36mHEAD -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m)[m
+Author: iulian Preuteasa <96450722+iulianPreuteasa@users.noreply.github.com>
+Date:   Wed Dec 25 21:59:23 2024 +0000
+
+    complete
+
+[33mcommit a6506dd115ccfb0de7a39f8bb948c2d1ac70d0fc[m
+Author: iulian Preuteasa <96450722+iulianPreuteasa@users.noreply.github.com>
+Date:   Sun Dec 22 22:18:02 2024 +0000
+
+    fixed database
+
+[33mcommit 9984f7d90c68a9c933b3e6f221d6a4caddc303df[m
+Author: iulian Preuteasa <96450722+iulianPreuteasa@users.noreply.github.com>
+Date:   Sun Dec 15 17:18:44 2024 +0000
+
+    fixed favicon and notifications when deleting a booking
+
+[33mcommit 287e8f2c34aaad75c9c30c58aab2ba850ec4ffc6[m
+Author: iulian Preuteasa <96450722+iulianPreuteasa@users.noreply.github.com>
+Date:   Sun Nov 24 21:11:53 2024 +0000
+
+    fixed bookings
+
+[33mcommit 1bf39fc50c665abde41bc1d81e07d527fbf9810b[m
+Author: iulian Preuteasa <96450722+iulianPreuteasa@users.noreply.github.com>
+Date:   Sat Nov 16 19:21:49 2024 +0000
+
+    bug fixed on ui
+
+[33mcommit daea1ae0922c0a869d7dfff83221f2662fdcc040[m
+Author: iulian Preuteasa <96450722+iulianPreuteasa@users.noreply.github.com>
+Date:   Thu Oct 3 22:06:15 2024 +0100
+
+    login and sign up now available
+
+[33mcommit f4e8ddcb7c19817df718f5cf2d62d9a9066ffb51[m
+Author: iulian Preuteasa <96450722+iulianPreuteasa@users.noreply.github.com>
+Date:   Sun Sep 22 18:36:22 2024 +0100
+
+    adding login and sign up pages
+
+[33mcommit 1f39a9e2b8832fd76ccba5dc45addce0e8ccac18[m
+Author: iulian Preuteasa <96450722+iulianPreuteasa@users.noreply.github.com>
+Date:   Sun Sep 15 14:33:33 2024 +0100
+
+    1
+
+[33mcommit c3ef4b48285647ca8db85af0200e94606130811a[m
+Author: iulian Preuteasa <96450722+iulianPreuteasa@users.noreply.github.com>
+Date:   Mon Sep 9 18:58:04 2024 +0100
+
+    Initialize project using Create React App

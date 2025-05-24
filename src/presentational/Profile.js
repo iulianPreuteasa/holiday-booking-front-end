@@ -2,36 +2,31 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import CalendarContainer from "../containers/CalendarContainer";
 import axios from "axios";
+import { useAuth } from "../context/AuthContext";
 
 const Profile = () => {
   const navigate = useNavigate();
+  const { user, accessToken } = useAuth();
 
   const [pendingDates, setPendingDates] = useState([]);
   const [acceptedDates, setAcceptedDates] = useState([]);
   const [rejectedDates, setRejectedDates] = useState([]);
   const [userId, setUserId] = useState(null);
-
   // On component mount, get the user ID from localStorage
   useEffect(() => {
-    const storedUser = localStorage.getItem("user");
-    if (storedUser) {
-      try {
-        const userObj = JSON.parse(storedUser);
-        setUserId(userObj.userId);
-      } catch (error) {
-        console.error("Error parsing stored user data:", error);
-      }
+    if (!user) {
+      navigate("/login");
     } else {
-      navigate("/login"); // Redirect to login if user data is not found
+      setUserId(user._id);
     }
-  }, [navigate]);
+  }, [user, navigate]);
 
   // Fetch bookings for the logged-in user
   useEffect(() => {
-    if (userId) {
+    if (userId && accessToken) {
       fetchBookings();
     }
-  }, [userId]); // Only call fetchBookings when userId changes
+  }, [userId, accessToken]);
 
   const formatDate = (dateString) => {
     const date = new Date(dateString);
@@ -39,10 +34,13 @@ const Profile = () => {
   };
 
   const fetchBookings = async () => {
-    if (!userId) return;
     try {
       const response = await axios.get("http://localhost:5000/bookings", {
-        params: { userId }, // Pass userId as a query parameter
+        params: { userId },
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+        withCredentials: true, // dacă backend-ul cere cookie-uri
       });
 
       const bookings = response.data;

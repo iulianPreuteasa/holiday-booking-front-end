@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import "react-calendar/dist/Calendar.css";
+import { useAuth } from "../context/AuthContext";
 
 const NotificationsContainer = () => {
   const [notifications, setNotifications] = useState([]);
-  const userId = JSON.parse(localStorage.getItem("user")).userId;
+  const { user } = useAuth();
+  const userId = user._id;
 
   useEffect(() => {
     const fetchNotifications = async () => {
