@@ -1,6 +1,20 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { z } from "zod";
+
+const schema = z
+  .object({
+    name: z.string().min(2, "Name must have at least 2 characters"),
+    surname: z.string().min(2, "Surname must have at least 2 characters"),
+    email: z.string().email("Email invalid"),
+    password: z.string().min(6, "Password must have at least 6 characters"),
+    confirmPassword: z.string(),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Password don't match",
+    path: ["confirmPassword"],
+  });
 
 const SignUpContainer = () => {
   const [name, setName] = useState("");
@@ -8,18 +22,21 @@ const SignUpContainer = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [errors, setErrors] = useState({});
 
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    // aici va trebui sa trimit datele in baza de date ca sa se faca un cont nou
+
+    const formData = { name, surname, email, password, confirmPassword };
+
     try {
+      // Validare Zod
+      schema.parse(formData);
+      setErrors({});
+
       // Trimite cererea de autentificare către server
-      if (password !== confirmPassword || password === "") {
-        alert("password doesen't match or empty");
-        return;
-      }
       const response = await axios.post("http://localhost:5000/users/signup", {
         name,
         surname,
@@ -28,16 +45,25 @@ const SignUpContainer = () => {
       });
 
       alert("You have been signed up, redirecting to login page");
-      // Redirecționează către pagina "Login"
       navigate("/login");
-    } catch (error) {
-      // În caz de eroare, arată un mesaj de eroare
-      console.error("Error Signed in in:", error);
+    } catch (err) {
+      if (err.errors) {
+        // Mapare erori Zod într-un obiect {field: message}
+        const fieldErrors = {};
+        err.errors.forEach((error) => {
+          fieldErrors[error.path[0]] = error.message;
+        });
+        setErrors(fieldErrors);
+      } else {
+        // Alte erori (ex: axios)
+        console.error("Error signing up:", err);
+        alert("A apărut o eroare, încearcă din nou.");
+      }
     }
   };
+
   return (
     <>
-      {" "}
       <div className="container-fluide p-3 border-bottom border-primary rounded d-flex justify-content-between">
         <button className="btn btn-primary" onClick={() => navigate("/login")}>
           Login Page
@@ -49,7 +75,7 @@ const SignUpContainer = () => {
           onSubmit={handleSubmit}
         >
           <input
-            className="form-control mb-3"
+            className="form-control mb-1"
             type="text"
             name="name"
             value={name}
@@ -57,8 +83,12 @@ const SignUpContainer = () => {
             id="name"
             placeholder="Name"
           />
+          {errors.name && (
+            <small className="text-danger mb-2">{errors.name}</small>
+          )}
+
           <input
-            className="form-control mb-3"
+            className="form-control mb-1"
             type="text"
             name="surname"
             id="surname"
@@ -66,8 +96,12 @@ const SignUpContainer = () => {
             value={surname}
             onChange={(e) => setSurname(e.target.value)}
           />
+          {errors.surname && (
+            <small className="text-danger mb-2">{errors.surname}</small>
+          )}
+
           <input
-            className="form-control mb-3"
+            className="form-control mb-1"
             type="email"
             name="email"
             id="email"
@@ -75,24 +109,35 @@ const SignUpContainer = () => {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
           />
+          {errors.email && (
+            <small className="text-danger mb-2">{errors.email}</small>
+          )}
+
           <input
-            className="form-control mb-3"
+            className="form-control mb-1"
             type="password"
-            name="passowrd"
+            name="password"
             id="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             placeholder="Password"
           />
+          {errors.password && (
+            <small className="text-danger mb-2">{errors.password}</small>
+          )}
+
           <input
             className="form-control mb-3"
             type="password"
-            name="confirm-password"
+            name="confirmPassword"
             id="confirm-password"
-            placeholder="Confirm Passowrd"
+            placeholder="Confirm Password"
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
           />
+          {errors.confirmPassword && (
+            <small className="text-danger mb-3">{errors.confirmPassword}</small>
+          )}
 
           <button type="submit" className="btn btn-primary mb-3">
             Submit
