@@ -1,34 +1,18 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
+import React from "react";
 
-const LoginInContainer = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const navigate = useNavigate();
-
-  const { login } = useAuth();
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    try {
-      await login(email, password); // folosești funcția din context
-      navigate("/home");
-    } catch {
-      alert("Invalid email or password.");
-    }
-  };
-
-  const signUp = () => {
-    navigate("/signup");
-  };
-
+export default function LoginView({
+  email,
+  setEmail,
+  password,
+  setPassword,
+  onSubmit,
+  onSignUp,
+}) {
   return (
     <div className="d-flex justify-content-center align-items-center vh-100">
       <div className="container-sm col-6 d-flex flex-column justify-content-center align-items-center">
         <form
-          onSubmit={handleSubmit}
+          onSubmit={onSubmit}
           className="d-flex flex-column mw-50 p-4 border rounded shadow-lg"
         >
           <input
@@ -56,7 +40,7 @@ const LoginInContainer = () => {
           </button>
           <div className="mt-4 d-flex justify-content-around align-items-center">
             <p>You don't have an account?</p>
-            <button className="py-1 btn btn-secondary" onClick={signUp}>
+            <button className="py-1 btn btn-secondary" onClick={onSignUp}>
               Sign Up
             </button>
           </div>
@@ -64,6 +48,4 @@ const LoginInContainer = () => {
       </div>
     </div>
   );
-};
-
-export default LoginInContainer;
+}

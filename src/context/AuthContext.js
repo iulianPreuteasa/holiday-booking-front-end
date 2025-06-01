@@ -13,12 +13,19 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     const fetchAccessToken = async () => {
       try {
-        const res = await axios.get(
+        const res = await axios.post(
           "http://localhost:5000/users/refresh_token",
-          { withCredentials: true }
+          {},
+          {
+            withCredentials: true,
+          }
         );
+        setAccessToken(res.data.accesstoken);
+        setUser(res.data.user);
       } catch (err) {
         console.error("Token refresh failed", err);
+        setAccessToken(null);
+        setUser(null);
       } finally {
         setLoading(false);
       }
