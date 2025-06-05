@@ -9,6 +9,7 @@ import NotificationsController from "../controllers/NotificationsController";
 import NavBarController from "../controllers/NavBarController";
 import HomeController from "../controllers/HomeController";
 import React from "react";
+import AdminController from "../controllers/AdminController";
 
 export default function AppView({ onLogout }) {
   const { user } = useAuth();
@@ -47,6 +48,16 @@ export default function AppView({ onLogout }) {
         {/* unprotected routes */}
         <Route path="/signup" element={<SignUpController />} />
         <Route path="/login" element={<LoginController />} />
+
+        {/* Admin page */}
+        <Route
+          path="/admin"
+          element={
+            <ProtectedRoute>
+              <AdminController />
+            </ProtectedRoute>
+          }
+        />
       </Routes>
     </>
   );
